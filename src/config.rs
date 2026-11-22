@@ -1,6 +1,5 @@
 pub const PRESET_HOST_LOCAL: &str = "http://localhost:3000";
 pub const PRESET_HOST_DOCKER: &str = "http://localhost:3008";
-pub const PRESET_HOST_REMOTE: &str = "http://100.96.219.81:3008";
 
 pub fn get_preset_hosts() -> Vec<String> {
     let mut hosts = Vec::new();
@@ -11,7 +10,7 @@ pub fn get_preset_hosts() -> Vec<String> {
         }
     }
 
-    for preset in [PRESET_HOST_REMOTE, PRESET_HOST_DOCKER, PRESET_HOST_LOCAL] {
+    for preset in [PRESET_HOST_LOCAL, PRESET_HOST_DOCKER] {
         let p = preset.to_string();
         if !hosts.contains(&p) {
             hosts.push(p);
@@ -92,10 +91,9 @@ impl Config {
                     chosen_url = Some(PRESET_HOST_LOCAL.to_string());
                 }
                 "--remote" => {
-                    let remote = env_remote
-                        .map(|s| s.to_string())
-                        .unwrap_or_else(|| PRESET_HOST_REMOTE.to_string());
-                    chosen_url = Some(remote);
+                    if let Some(remote) = env_remote {
+                        chosen_url = Some(remote.to_string());
+                    }
                 }
                 "--allow-switch" => {
                     has_allow_switch = true;
@@ -132,7 +130,7 @@ mod tests {
     #[test]
     fn test_normalize_url() {
         assert_eq!(normalize_url("http://localhost:3000/"), "http://localhost:3000");
-        assert_eq!(normalize_url("http://100.96.219.81:3008/"), "http://100.96.219.81:3008");
+        assert_eq!(normalize_url("http://remote-server:3008/"), "http://remote-server:3008");
         assert_eq!(normalize_url("localhost:3008"), "http://localhost:3008");
         assert_eq!(normalize_url("http://localhost:3008/api/v1"), "http://localhost:3008");
         assert_eq!(normalize_url("http://localhost:3008/api/v1/"), "http://localhost:3008");
@@ -149,8 +147,8 @@ mod tests {
     #[test]
     fn test_default_with_devbook_remote_url() {
         let args = vec!["devbook-tui".to_string()];
-        let cfg = Config::parse_from_args_and_env(&args, Some("http://100.96.219.81:3008"));
-        assert_eq!(cfg.base_url, "http://100.96.219.81:3008");
+        let cfg = Config::parse_from_args_and_env(&args, Some("http://remote-server:3008"));
+        assert_eq!(cfg.base_url, "http://remote-server:3008");
         // Locked by default when DEVBOOK_REMOTE_URL is set
         assert!(!cfg.allow_host_switcher);
     }
@@ -158,15 +156,15 @@ mod tests {
     #[test]
     fn test_allow_switch_override_with_remote_url() {
         let args = vec!["devbook-tui".to_string(), "--allow-switch".to_string()];
-        let cfg = Config::parse_from_args_and_env(&args, Some("http://100.96.219.81:3008"));
-        assert_eq!(cfg.base_url, "http://100.96.219.81:3008");
+        let cfg = Config::parse_from_args_and_env(&args, Some("http://remote-server:3008"));
+        assert_eq!(cfg.base_url, "http://remote-server:3008");
         assert!(cfg.allow_host_switcher);
     }
 
     #[test]
     fn test_local_flag_overrides_remote_env() {
         let args = vec!["devbook-tui".to_string(), "--local".to_string()];
-        let cfg = Config::parse_from_args_and_env(&args, Some("http://100.96.219.81:3008"));
+        let cfg = Config::parse_from_args_and_env(&args, Some("http://remote-server:3008"));
         assert_eq!(cfg.base_url, "http://localhost:3000");
     }
 
@@ -177,7 +175,7 @@ mod tests {
             "--url".to_string(),
             "http://custom:8080".to_string(),
         ];
-        let cfg = Config::parse_from_args_and_env(&args, Some("http://100.96.219.81:3008"));
+        let cfg = Config::parse_from_args_and_env(&args, Some("http://remote-server:3008"));
         assert_eq!(cfg.base_url, "http://custom:8080");
     }
 }

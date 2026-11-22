@@ -10,7 +10,7 @@ use ratatui::{backend::TestBackend, Terminal};
 fn test_live_instance_and_ui_render() {
     let test_url = std::env::var("DEVBOOK_TEST_URL")
         .or_else(|_| std::env::var("DEVBOOK_REMOTE_URL"))
-        .unwrap_or_else(|_| "http://100.96.219.81:3008".to_string());
+        .unwrap_or_else(|_| "http://localhost:3000".to_string());
 
     let config = Config::new(&test_url);
     let client = ApiClient::new(&config);

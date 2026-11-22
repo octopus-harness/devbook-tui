@@ -21,9 +21,9 @@ A fast, keyboard-driven terminal user interface (TUI) for the [Devbook](https://
 ## Features
 
 - **Host URL Resolution & Host Switcher**:
-  - **Environment default**: When `DEVBOOK_REMOTE_URL` (or `DEVBOOK_URL`) is set in the shell (e.g. `export DEVBOOK_REMOTE_URL="http://100.96.219.81:3008"`), running `cargo run` or `devbook-tui` connects directly to that URL.
+  - **Environment default**: When `DEVBOOK_REMOTE_URL` (or `DEVBOOK_URL`) is set in the shell (e.g. `export DEVBOOK_REMOTE_URL="http://remote-server:3008"`), running `cargo run` or `devbook-tui` connects directly to that URL.
   - **Fallback**: If `DEVBOOK_REMOTE_URL` is not set, defaults to `http://localhost:3000`.
-  - **CLI overrides**: `--url <URL>`, `--host <URL>`, `--remote` (`http://100.96.219.81:3008`), and `--local` (`http://localhost:3000`) always take precedence over the environment.
+  - **CLI overrides**: `--url <URL>`, `--host <URL>`, `--remote` (uses `DEVBOOK_REMOTE_URL`), and `--local` (`http://localhost:3000`) always take precedence over the environment.
   - **Locking behavior**:
     - If `DEVBOOK_REMOTE_URL` is set, host switching is locked by default so the TUI stays pinned to your configured instance.
     - Pass `--allow-switch` to re-enable the Host Switcher dialog while using `DEVBOOK_REMOTE_URL`.
@@ -70,7 +70,7 @@ cargo run
 cargo run -- --local
 
 # Specify any target host explicitly
-cargo run -- --url http://100.96.219.81:3008
+cargo run -- --url http://localhost:3008
 
 # Allow in-app Host Switcher even when DEVBOOK_REMOTE_URL is set
 cargo run -- --allow-switch
