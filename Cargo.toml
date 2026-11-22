@@ -1,0 +1,30 @@
+[package]
+name = "devbook-tui"
+version = "1.0.0"
+edition = "2021"
+authors = ["Leonid Medovyy <leonid@macron1.io>"]
+description = "A fast, keyboard-driven terminal user interface for Devbook prompt engineering workbench"
+readme = "README.md"
+repository = "https://github.com/octopus-harness/devbook-tui"
+license = "MIT"
+keywords = ["tui", "prompts", "prompt-engineering", "ratatui", "terminal"]
+categories = ["command-line-utilities"]
+
+[lib]
+name = "devbook_tui"
+path = "src/lib.rs"
+
+[[bin]]
+name = "devbook-tui"
+path = "src/main.rs"
+
+[dependencies]
+ratatui = "0.28"
+crossterm = "0.28"
+reqwest = { version = "0.12", features = ["blocking", "json", "multipart"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+unicode-width = "0.1"
+arboard = "3"
+tempfile = "3"
